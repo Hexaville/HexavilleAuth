@@ -12,7 +12,7 @@ import HexavilleFramework
 
 let app = HexavilleFramework()
 
-var middleware = HexavilleAuth()
+var auth = HexavilleAuth()
 
 let APP_URL = ProcessInfo.processInfo.environment["APP_URL"] ?? "http://localhsot:3000"
 
@@ -56,12 +56,12 @@ let instagramProvider = InstagramAuthenticationProvider(
     return Response(body: "\(credential)")
 }
 
-middleware.add(facebookProvider)
-middleware.add(githubProvider)
-middleware.add(googleProvider)
-middleware.add(instagramProvider)
+auth.add(facebookProvider)
+auth.add(githubProvider)
+auth.add(googleProvider)
+auth.add(instagramProvider)
 
-app.use(middleware)
+app.use(auth.asRouter())
 
 let router = Router()
 
