@@ -20,8 +20,8 @@ public protocol OAuth2AuthentitionProvidable {
 }
 
 extension OAuth2AuthentitionProvidable {
-    public func createAuthorizeURL() -> URL {
-        return oauth.createAuthorizeURL()
+    public func createAuthorizeURL() throws -> URL {
+        return try oauth.createAuthorizeURL()
     }
     
     public func getAccessToken(request: Request) throws -> Credential {

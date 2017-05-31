@@ -20,13 +20,13 @@ public struct HexavilleAuth: Middleware {
 
     public func respond(to request: Request, context: ApplicationContext) throws -> Chainer {
         let currentPath = request.path ?? "/"
-        
+    
         for provider in providers {
             if provider.path == currentPath {
                 let response = Response(
                     status: .found,
                     headers: [
-                        "Location": provider.createAuthorizeURL().absoluteString
+                        "Location": try provider.createAuthorizeURL().absoluteString
                     ]
                 )
                 return .respond(to: response)

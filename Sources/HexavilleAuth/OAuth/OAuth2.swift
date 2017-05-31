@@ -9,6 +9,10 @@
 import Foundation
 import HexavilleFramework
 
+public enum OAuth2Error: Error {
+    case invalidAuthrozeURL(String)
+}
+
 public class OAuth2 {
     let consumerKey: String
     let consumerSecret: String
@@ -32,7 +36,7 @@ public class OAuth2 {
         return dict.map({ "\($0.key)=\($0.value)" }).joined(separator: "&")
     }
     
-    public func createAuthorizeURL() -> URL {
+    public func createAuthorizeURL() throws -> URL {
         let params = [
             "client_id": consumerKey,
             "redirect_uri": callbackURL,
@@ -42,7 +46,11 @@ public class OAuth2 {
         
         let queryString = dictionary2Query(params)
         
-        return URL(string: "\(authorizeURL)?\(queryString)")!
+        guard let url = URL(string: "\(authorizeURL)?\(queryString)") else {
+            throw OAuth2Error.invalidAuthrozeURL("\(authorizeURL)?\(queryString)")
+        }
+        
+        return url
     }
     
     public func getAccessToken(request: Request) throws -> Credential {
@@ -59,8 +67,6 @@ public class OAuth2 {
             "grant_type=authorization_code",
             "redirect_uri=\(self.callbackURL)"
         ]
-        
-        print(body)
         
         let client = try HTTPClient(url: url)
         try client.open()

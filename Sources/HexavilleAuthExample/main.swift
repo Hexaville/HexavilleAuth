@@ -65,6 +65,10 @@ app.use(middleware)
 
 let router = Router()
 
+router.use(.get, "/") { _ in
+    return Response(body: "Welcome to Hexaville Auth")
+}
+
 app.use(router)
 
 app.catch { error in
