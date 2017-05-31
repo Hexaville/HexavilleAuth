@@ -29,11 +29,9 @@ public struct HexavilleAuth {
                 return response
             }
             
-            if let url = URL(string: provider.oauth.callbackURL) {
-                router.use(.get, url.path) { request, context in
-                    let cred = try provider.getAccessToken(request: request)
-                    return try provider.callback(cred, request, context)
-                }
+            router.use(.get, provider.oauth.callbackURL.path) { request, context in
+                let cred = try provider.getAccessToken(request: request)
+                return try provider.callback(cred, request, context)
             }
         }
         

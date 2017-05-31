@@ -17,7 +17,7 @@ public struct FacebookAuthenticationProvider: OAuth2AuthentitionProvidable {
     
     public let callback: RespodWithCredential
     
-    public init(path: String, consumerKey: String, consumerSecret: String, callbackURL: String, scope: String, callback: @escaping RespodWithCredential) {
+    public init(path: String, consumerKey: String, consumerSecret: String, callbackURL: CallbackURL, scope: String, callback: @escaping RespodWithCredential) {
         self.path = path
         
         self.oauth = OAuth2(

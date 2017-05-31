@@ -19,10 +19,10 @@ public class OAuth2 {
     let authorizeURL: String
     var accessTokenURL: String?
     let responseType: String
-    let callbackURL: String
+    let callbackURL: CallbackURL
     let scope: String
     
-    public init(consumerKey: String, consumerSecret: String, authorizeURL: String, accessTokenURL: String? = nil, responseType: String = "code", callbackURL: String, scope: String) {
+    public init(consumerKey: String, consumerSecret: String, authorizeURL: String, accessTokenURL: String? = nil, responseType: String = "code", callbackURL: CallbackURL, scope: String) {
         self.consumerKey = consumerKey
         self.consumerSecret = consumerSecret
         self.authorizeURL = authorizeURL
@@ -39,7 +39,7 @@ public class OAuth2 {
     public func createAuthorizeURL() throws -> URL {
         let params = [
             "client_id": consumerKey,
-            "redirect_uri": callbackURL,
+            "redirect_uri": callbackURL.absoluteURL()!.absoluteString,
             "response_type": responseType,
             "scope": scope
         ]
@@ -65,7 +65,7 @@ public class OAuth2 {
             "client_secret=\(self.consumerSecret)",
             "code=\(code)",
             "grant_type=authorization_code",
-            "redirect_uri=\(self.callbackURL)"
+            "redirect_uri=\(self.callbackURL.absoluteURL()!.absoluteString)"
         ]
         
         let client = try HTTPClient(url: url)
