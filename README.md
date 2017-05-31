@@ -59,12 +59,12 @@ let facebookProvider = FacebookAuthenticationProvider(
     path: "/auth/facebook",
     consumerKey: ProcessInfo.processInfo.environment["FACEBOOK_APP_ID"] ?? "",
     consumerSecret: ProcessInfo.processInfo.environment["FACEBOOK_APP_SECRET"] ?? "",
-    callbackURL: "\(APP_URL)/auth/facebook/callback",
+    callbackURL: CallbackURL(baseURL: APP_URL, path: "/auth/facebook/callback"),
     scope: "public_profile"
 ) { credential, request, context in
-    
+
     // here is called when the access_token got successfully from sns.
-    
+
     return Response(body: "\(credential)")
 }
 
@@ -125,7 +125,7 @@ public protocol OAuth2AuthentitionProvidable {
     var path: String { get } // path for authorize
     var oauth: OAuth2 { get }
     var callback: RespodWithCredential { get }  // callback for success handler
-    init(path: String, consumerKey: String, consumerSecret: String, callbackURL: String, scope: String, callback: @escaping RespodWithCredential)
+    init(path: String, consumerKey: String, consumerSecret: String, callbackURL: CallbackURL, scope: String, callback: @escaping RespodWithCredential)
     func getAccessToken(request: Request) throws -> Credential
 }
 ```
@@ -166,7 +166,7 @@ let salesforceProvider = SalesforceAuthenticationProvider(
     path: "/auth/salesforce",
     consumerKey: "consumer",
     consumerSecret: "secret",
-    callbackURL: "\(APP_URL)/auth/salesforce/callback",
+    callbackURL: CallbackURL(baseURL: APP_URL, path: "/auth/salesforce/callback"),
     scope: "public_profile"
 ) { credential, request, context in
 

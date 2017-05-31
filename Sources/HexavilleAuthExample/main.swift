@@ -20,7 +20,7 @@ let facebookProvider = FacebookAuthenticationProvider(
     path: "/auth/facebook",
     consumerKey: ProcessInfo.processInfo.environment["FACEBOOK_APP_ID"] ?? "",
     consumerSecret: ProcessInfo.processInfo.environment["FACEBOOK_APP_SECRET"] ?? "",
-    callbackURL: "\(APP_URL)/auth/facebook/callback",
+    callbackURL: CallbackURL(baseURL: APP_URL, path: "/auth/facebook/callback"),
     scope: "public_profile"
 ) { credential, request, context in
     return Response(body: "\(credential)")
@@ -30,7 +30,7 @@ let githubProvider = GithubAuthenticationProvider(
     path: "/auth/github",
     consumerKey: ProcessInfo.processInfo.environment["GITHUB_APP_ID"] ?? "",
     consumerSecret: ProcessInfo.processInfo.environment["GITHUB_APP_SECRET"] ?? "",
-    callbackURL: "\(APP_URL)/auth/github/callback",
+    callbackURL: CallbackURL(baseURL: APP_URL, path: "/auth/github/callback"),
     scope: "user,repo"
 ) { credential, request, context in
     return Response(body: "\(credential)")
@@ -40,7 +40,7 @@ let googleProvider = GoogleAuthenticationProvider(
     path: "/auth/google",
     consumerKey: ProcessInfo.processInfo.environment["GOOGLE_APP_ID"] ?? "",
     consumerSecret: ProcessInfo.processInfo.environment["GOOGLE_APP_SECRET"] ?? "",
-    callbackURL: "\(APP_URL)/auth/google/callback",
+    callbackURL: CallbackURL(baseURL: APP_URL, path: "/auth/google/callback"),
     scope: "https://www.googleapis.com/auth/drive"
 ) { credential, request, context in
     return Response(body: "\(credential)")
@@ -50,7 +50,7 @@ let instagramProvider = InstagramAuthenticationProvider(
     path: "/auth/instagram",
     consumerKey: ProcessInfo.processInfo.environment["INSTAGRAM_APP_ID"] ?? "",
     consumerSecret: ProcessInfo.processInfo.environment["INSTAGRAM_APP_SECRET"] ?? "",
-    callbackURL: "\(APP_URL)/auth/instagram/callback",
+    callbackURL: CallbackURL(baseURL: APP_URL, path: "/auth/instagram/callback"),
     scope: "basic"
 ) { credential, request, context in
     return Response(body: "\(credential)")
