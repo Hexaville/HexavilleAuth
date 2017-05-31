@@ -1,6 +1,6 @@
 //
-//  GithubAuthenticationProvider.swift
-//  SNSAuthenticationMiddleware
+//  InstagramAuthenticationProvider.swift
+//  HexavilleAuth
 //
 //  Created by Yuki Takei on 2017/05/31.
 //
@@ -9,7 +9,7 @@
 import Foundation
 import HexavilleFramework
 
-public struct GithubAuthenticationProvider: OAuth2AuthentitionProvidable {
+public struct InstagramAuthenticationProvider: OAuth2AuthentitionProvidable {
     
     public let path: String
     
@@ -23,8 +23,8 @@ public struct GithubAuthenticationProvider: OAuth2AuthentitionProvidable {
         self.oauth = OAuth2(
             consumerKey: consumerKey,
             consumerSecret: consumerSecret,
-            authorizeURL: "http://github.com/login/oauth/authorize",
-            accessTokenURL: "https://github.com/login/oauth/access_token",
+            authorizeURL: "https://api.instagram.com/oauth/authorize",
+            accessTokenURL: "https://api.instagram.com/oauth/access_token",
             callbackURL: callbackURL,
             scope: scope
         )

@@ -1,13 +1,13 @@
 import Foundation
 import HexavilleFramework
 
-public enum SNSAuthenticationMiddlewareError: Error {
+public enum HexavilleAuthError: Error {
     case unsupportedPlaform
     case codeIsMissingInResponseParameters
     case responseError(Response)
 }
 
-public struct SNSAuthenticationMiddleware: Middleware {
+public struct HexavilleAuth: Middleware {
     var providers: [OAuth2AuthentitionProvidable] = []
     
     var callbackHandler: RespodWithCredential?

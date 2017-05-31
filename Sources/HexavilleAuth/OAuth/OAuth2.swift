@@ -1,6 +1,6 @@
 //
 //  OAuth2.swift
-//  SNSAuthenticationMiddleware
+//  HexavilleAuth
 //
 //  Created by Yuki Takei on 2017/05/31.
 //
@@ -47,7 +47,7 @@ public class OAuth2 {
     
     public func getAccessToken(request: Request) throws -> Credential {
         guard let code = request.queryItems.filter({ $0.name == "code" }).first?.value else {
-            throw SNSAuthenticationMiddlewareError.codeIsMissingInResponseParameters
+            throw HexavilleAuthError.codeIsMissingInResponseParameters
         }
         let urlString = self.accessTokenURL!
         let url = URL(string: urlString)!
@@ -74,7 +74,7 @@ public class OAuth2 {
         )
         
         guard (200..<300).contains(response.statusCode) else {
-            throw SNSAuthenticationMiddlewareError.responseError(response)
+            throw HexavilleAuthError.responseError(response)
         }
         
         do {

@@ -1,6 +1,6 @@
 //
 //  Credential.swift
-//  SNSAuthenticationMiddleware
+//  HexavilleAuth
 //
 //  Created by Yuki Takei on 2017/05/31.
 //

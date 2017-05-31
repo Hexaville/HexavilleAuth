@@ -1,6 +1,6 @@
 import XCTest
-@testable import SNSAuthenticationMiddlewareTests
+@testable import HexavilleAuthTests
 
 XCTMain([
-    testCase(SNSAuthenticationMiddlewareTests.allTests),
+    testCase(HexavilleAuthTests.allTests),
 ])

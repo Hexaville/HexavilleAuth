@@ -1,11 +1,11 @@
 import XCTest
-@testable import SNSAuthenticationMiddleware
+@testable import HexavilleAuth
 
-class SNSAuthenticationMiddlewareTests: XCTestCase {
+class HexavilleAuthTests: XCTestCase {
     func testExample() {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
-        XCTAssertEqual(SNSAuthenticationMiddleware().text, "Hello, World!")
+        XCTAssertEqual(HexavilleAuth().text, "Hello, World!")
     }
 
 

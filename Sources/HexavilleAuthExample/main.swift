@@ -1,18 +1,18 @@
 //
 //  main.swift
-//  SNSAuthenticationMiddleware
+//  HexavilleAuth
 //
 //  Created by Yuki Takei on 2017/05/30.
 //
 //
 
 import Foundation
-import SNSAuthenticationMiddleware
+import HexavilleAuth
 import HexavilleFramework
 
 let app = HexavilleFramework()
 
-var middleware = SNSAuthenticationMiddleware()
+var middleware = HexavilleAuth()
 
 let APP_URL = ProcessInfo.processInfo.environment["APP_URL"] ?? "http://localhsot:3000"
 
@@ -69,7 +69,7 @@ app.use(router)
 
 app.catch { error in
     switch error {
-    case SNSAuthenticationMiddlewareError.responseError(let response):
+    case HexavilleAuthError.responseError(let response):
         return Response(body: response.body.asData())
     default:
         return Response(body: "\(error)")

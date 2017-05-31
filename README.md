@@ -1,10 +1,17 @@
-# SNSAuthenticationMiddleware for Hexaville
+# HexavilleAuth
 
-SNSAuthenticationMiddleware is an authentication middleware for [Hexaville](https://github.com/noppoMan/Hexaville). 
+HexavilleAuth is an Authentication(OAuth, simple password based) middleware for [Hexaville](https://github.com/noppoMan/Hexaville).
 
-SNSAuthenticationMiddleware recognizes that each application has unique authentication requirements. It allows individual authentication mechanisms to be packaged as plugins which it consumes. SNSAuthenticationMiddleware automatically creates resources for authorize/callback for each sns platforms, So you can embed sns authentication features into your Hexaville application very quickly.
+HexavilleAuth recognizes that each application has unique authentication requirements. It allows individual authentication mechanisms to be packaged as plugins which it consumes.
+
+Plugins can range from a simple password based authentication or, authentication using OAuth (via Facebook, Github OAuth provider, etc.).
+
+HexavilleAuth automatically creates resources for authorize/callback for each sns platforms, So you can embed sns authentication features into your Hexaville application very quickly.
 
 
+## Authentication Methods
+* [ ] Email+password
+* [x] SNS+OAuth
 
 ## Supported SNS Platforms
 
@@ -20,7 +27,7 @@ SNSAuthenticationMiddleware recognizes that each application has unique authenti
 
 ## Installation
 
-Just add `.Package(url: "https://github.com/Hexaville/SNSAuthenticationMiddleware.git", majorVersion: 0, minor: 1)` into your Package.swift
+Just add `.Package(url: "https://github.com/Hexaville/HexavilleAuth.git", majorVersion: 0, minor: 1)` into your Package.swift
 
 ```swift
 import PackageDescription
@@ -28,7 +35,7 @@ import PackageDescription
 let package = Package(
     name: "MyHexavilleApplication",
     dependencies: [
-        .Package(url: "https://github.com/Hexaville/SNSAuthenticationMiddleware.git", majorVersion: 0, minor: 1)
+        .Package(url: "https://github.com/Hexaville/HexavilleAuth.git", majorVersion: 0, minor: 1)
     ]
 )
 ```
@@ -39,12 +46,12 @@ Here is an example code for facebook oauth authentication with [HexavilleFramewo
 
 ```swift
 import Foundation
-import SNSAuthenticationMiddleware
+import HexavilleAuth
 import HexavilleFramework
 
 let app = HexavilleFramework()
 
-var middleware = SNSAuthenticationMiddleware()
+var middleware = HexavilleAuth()
 
 let facebookProvider = FacebookAuthenticationProvider(
     path: "/auth/facebook",
@@ -53,9 +60,9 @@ let facebookProvider = FacebookAuthenticationProvider(
     callbackURL: "\(APP_URL)/auth/facebook/callback",
     scope: "public_profile"
 ) { credential, request, context in
-    
+
     // here is called when the access_token got successfully from sns.
-    
+
     return Response(body: "\(credential)")
 }
 
@@ -65,7 +72,7 @@ app.use(middleware)
 
 app.catch { error in
     switch error {
-    case SNSAuthenticationMiddlewareError.responseError(let response):
+    case HexavilleAuthError.responseError(let response):
         return Response(body: response.body.asData())
     default:
         return Response(body: "\(error)")
@@ -77,20 +84,20 @@ try app.run()
 
 ## Try Example!
 
-[Here is an official full example code](https://github.com/Hexaville/SNSAuthenticationMiddleware/blob/master/Sources/SNSAuthenticationMiddlewareExample/main.swift).
+[Here is an official full example code](https://github.com/Hexaville/HexavilleAuth/blob/master/Sources/HexavilleAuthExample/main.swift).
 
 ### Install and Build Example
 
 ```sh
-git clone https://github.com/Hexaville/SNSAuthenticationMiddleware.git
-cd SNSAuthenticationMiddleware
+git clone https://github.com/Hexaville/HexavilleAuth.git
+cd HexavilleAuth
 cd swift build
 ```
 
 ### Launch Server
 
 ```sh
-./.build/debug/SNSAuthenticationMiddlewareExample
+./.build/debug/HexavilleAuthExample
 
 # => Hexaville Builtin Server started at 0.0.0.0:3000
 ```
@@ -125,16 +132,16 @@ here is an example for Salesforce Authentication.
 
 ```swift
 public struct SalesforceAuthenticationProvider: OAuth2AuthentitionProvidable {
-    
+
     public let path: String
-    
+
     public let oauth: OAuth2
-    
+
     public let callback: RespodWithCredential
-    
+
     public init(path: String, consumerKey: String, consumerSecret: String, callbackURL: String, scope: String, callback: @escaping RespodWithCredential) {
         self.path = path
-        
+
         self.oauth = OAuth2(
             consumerKey: consumerKey,
             consumerSecret: consumerSecret,
@@ -143,7 +150,7 @@ public struct SalesforceAuthenticationProvider: OAuth2AuthentitionProvidable {
             callbackURL: callbackURL,
             scope: scope
         )
-        
+
         self.callback = callback
     }
 }
@@ -151,7 +158,7 @@ public struct SalesforceAuthenticationProvider: OAuth2AuthentitionProvidable {
 
 Use it!
 ```swift
-var middleware = SNSAuthenticationMiddleware()
+var middleware = HexavilleAuth()
 
 let salesforceProvider = SalesforceAuthenticationProvider(
     path: "/auth/salesforce",
@@ -162,7 +169,7 @@ let salesforceProvider = SalesforceAuthenticationProvider(
 ) { credential, request, context in
 
     try DB.save(token: credential.accessToken)
-    
+
     return Response(body: "\(credential)")
 }
 
@@ -171,4 +178,4 @@ middleware.add(salesforceProvider)
 
 ## License
 
-SNSAuthenticationMiddleware is released under the MIT license. See LICENSE for details.
+HexavilleAuth is released under the MIT license. See LICENSE for details.

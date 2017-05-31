@@ -1,15 +1,15 @@
 //
-//  InstagramAuthenticationProvider.swift
-//  SNSAuthenticationMiddleware
+//  FacebookAuthenticationProvider.swift
+//  HexavilleAuth
 //
-//  Created by Yuki Takei on 2017/05/31.
+//  Created by Yuki Takei on 2017/05/30.
 //
 //
 
 import Foundation
 import HexavilleFramework
 
-public struct InstagramAuthenticationProvider: OAuth2AuthentitionProvidable {
+public struct FacebookAuthenticationProvider: OAuth2AuthentitionProvidable {
     
     public let path: String
     
@@ -23,8 +23,8 @@ public struct InstagramAuthenticationProvider: OAuth2AuthentitionProvidable {
         self.oauth = OAuth2(
             consumerKey: consumerKey,
             consumerSecret: consumerSecret,
-            authorizeURL: "https://api.instagram.com/oauth/authorize",
-            accessTokenURL: "https://api.instagram.com/oauth/access_token",
+            authorizeURL: "https://www.facebook.com/dialog/oauth",
+            accessTokenURL: "https://graph.facebook.com/oauth/access_token",
             callbackURL: callbackURL,
             scope: scope
         )
@@ -32,4 +32,3 @@ public struct InstagramAuthenticationProvider: OAuth2AuthentitionProvidable {
         self.callback = callback
     }
 }
-
