@@ -1,6 +1,6 @@
 # HexavilleAuth
 
-HexavilleAuth is an Authentication(OAuth, simple password based) middleware for [Hexaville](https://github.com/noppoMan/Hexaville).
+HexavilleAuth is an Authentication(OAuth, simple password based) framework for [Hexaville](https://github.com/noppoMan/Hexaville).
 
 HexavilleAuth recognizes that each application has unique authentication requirements. It allows individual authentication mechanisms to be packaged as plugins which it consumes.
 
@@ -51,7 +51,9 @@ import HexavilleFramework
 
 let app = HexavilleFramework()
 
-var middleware = HexavilleAuth()
+var auth = HexavilleAuth()
+
+let APP_URL = ProcessInfo.processInfo.environment["APP_URL"] ?? "http://localhost:3000"
 
 let facebookProvider = FacebookAuthenticationProvider(
     path: "/auth/facebook",
@@ -60,15 +62,15 @@ let facebookProvider = FacebookAuthenticationProvider(
     callbackURL: "\(APP_URL)/auth/facebook/callback",
     scope: "public_profile"
 ) { credential, request, context in
-
+    
     // here is called when the access_token got successfully from sns.
-
+    
     return Response(body: "\(credential)")
 }
 
-middleware.add(facebookProvider)
+auth.add(facebookProvider)
 
-app.use(middleware)
+app.use(auth.asRouter())
 
 app.catch { error in
     switch error {
@@ -158,7 +160,7 @@ public struct SalesforceAuthenticationProvider: OAuth2AuthentitionProvidable {
 
 Use it!
 ```swift
-var middleware = HexavilleAuth()
+var auth = HexavilleAuth()
 
 let salesforceProvider = SalesforceAuthenticationProvider(
     path: "/auth/salesforce",
@@ -173,7 +175,7 @@ let salesforceProvider = SalesforceAuthenticationProvider(
     return Response(body: "\(credential)")
 }
 
-middleware.add(salesforceProvider)
+auth.add(salesforceProvider)
 ```
 
 ## License
