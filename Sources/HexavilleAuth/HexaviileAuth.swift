@@ -7,41 +7,36 @@ public enum HexavilleAuthError: Error {
     case responseError(Response)
 }
 
-public struct HexavilleAuth: Middleware {
+public struct HexavilleAuth {
     var providers: [OAuth2AuthentitionProvidable] = []
     
-    var callbackHandler: RespodWithCredential?
-
     public init() {}
     
     public mutating func add(_ provider: OAuth2AuthentitionProvidable) {
         self.providers.append(provider)
     }
-
-    public func respond(to request: Request, context: ApplicationContext) throws -> Chainer {
-        let currentPath = request.path ?? "/"
     
+    public func asRouter() -> Router {
+        let router = Router()
         for provider in providers {
-            if provider.path == currentPath {
+            router.use(.get, provider.path) { request, context in
                 let response = Response(
                     status: .found,
                     headers: [
                         "Location": try provider.createAuthorizeURL().absoluteString
                     ]
                 )
-                return .respond(to: response)
+                return response
             }
             
-            if let url = URL(string: provider.oauth.callbackURL), url.path == currentPath {
-                let cred = try provider.getAccessToken(request: request)
-                return .respond(to: try provider.callback(cred, request, context))
+            if let url = URL(string: provider.oauth.callbackURL) {
+                router.use(.get, url.path) { request, context in
+                    let cred = try provider.getAccessToken(request: request)
+                    return try provider.callback(cred, request, context)
+                }
             }
         }
         
-        return .next(request)
-    }
-    
-    public mutating func callback(_ handler: @escaping RespodWithCredential) {
-        self.callbackHandler = handler
+        return router
     }
 }
