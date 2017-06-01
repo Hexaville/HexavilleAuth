@@ -77,18 +77,7 @@ public class OAuth2 {
         let (response, bodyData) = try URLSession.shared.resumeSync(with: request)
         
         guard (200..<300).contains(response.statusCode) else {
-            var headers: Headers = [:]
-            for el in response.allHeaderFields {
-                headers[el.key.description] = "\(el.value)"
-            }
-            
-            let response = Response(
-                status: Response.Status(statusCode: response.statusCode),
-                headers: headers,
-                body: bodyData
-            )
-            
-            throw HexavilleAuthError.responseError(response)
+            throw HexavilleAuthError.responseError(response.transform(withBodyData: bodyData))
         }
         
         do {

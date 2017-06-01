@@ -9,20 +9,6 @@
 import Foundation
 import HexavilleFramework
 
-public struct CallbackURL {
-    public let baseURL: String
-    public let path: String
-    
-    public init(baseURL: String, path: String){
-        self.baseURL = baseURL
-        self.path = path
-    }
-    
-    public func absoluteURL() -> URL? {
-        return URL(string: "\(baseURL)\(path)")
-    }
-}
-
 public typealias RespodWithCredential = (Credential, Request, ApplicationContext) throws -> Response
 
 public protocol OAuth2AuthentitionProvidable {

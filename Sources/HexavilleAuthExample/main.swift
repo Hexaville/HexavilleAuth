@@ -12,6 +12,17 @@ import HexavilleFramework
 
 let app = HexavilleFramework()
 
+let sessionMiddleware = SessionMiddleware(
+    cookieAttribute: CookieAttribute(
+        expiration: 3600,
+        httpOnly: true,
+        secure: false
+    ),
+    store: SessionMemoryStore()
+)
+
+app.use(sessionMiddleware)
+
 var auth = HexavilleAuth()
 
 let APP_URL = ProcessInfo.processInfo.environment["APP_URL"] ?? "http://localhsot:3000"
@@ -56,10 +67,21 @@ let instagramProvider = InstagramAuthenticationProvider(
     return Response(body: "\(credential)")
 }
 
+let twitterProvider = TwitterAuthenticationProvider(
+    path: "/auth/twitter",
+    consumerKey: ProcessInfo.processInfo.environment["TWITTER_APP_ID"] ?? "",
+    consumerSecret: ProcessInfo.processInfo.environment["TWITTER_APP_SECRET"] ?? "",
+    callbackURL: CallbackURL(baseURL: APP_URL, path: "/auth/twitter/callback"),
+    scope: ""
+) { credential, request, context in
+    return Response(body: "\(credential)")
+}
+
 auth.add(facebookProvider)
 auth.add(githubProvider)
 auth.add(googleProvider)
 auth.add(instagramProvider)
+auth.add(twitterProvider)
 
 app.use(auth.asRouter())
 
@@ -74,7 +96,7 @@ app.use(router)
 app.catch { error in
     switch error {
     case HexavilleAuthError.responseError(let response):
-        return Response(body: response.body.asData())
+        return Response(status: .badRequest, body: response.body.asData())
     default:
         return Response(body: "\(error)")
     }

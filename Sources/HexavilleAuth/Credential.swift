@@ -18,6 +18,7 @@ public struct Credential {
     public let tokenType: String?
     public let refreshToken: String?
     public let expiresAt: Date?
+    public let raw: [String: Any]
 }
 
 extension Credential {
@@ -25,6 +26,8 @@ extension Credential {
         if let accessToken = params["code"] as? String {
             self.accessToken = accessToken
         } else if let accessToken = params["access_token"] as? String {
+            self.accessToken = accessToken
+        } else if let accessToken = params["oauth_token"] as? String {
             self.accessToken = accessToken
         } else {
             throw CredentialError.couldNotFindAccessTokenInResponse
@@ -38,6 +41,7 @@ extension Credential {
         } else {
             self.expiresAt = nil
         }
+        self.raw = params
     }
     
     public init(withQueryItems queryItems: [URLQueryItem]) throws {
