@@ -32,9 +32,9 @@ let facebookProvider = FacebookAuthorizationProvider(
     consumerKey: ProcessInfo.processInfo.environment["FACEBOOK_APP_ID"] ?? "",
     consumerSecret: ProcessInfo.processInfo.environment["FACEBOOK_APP_SECRET"] ?? "",
     callbackURL: CallbackURL(baseURL: APP_URL, path: "/auth/facebook/callback"),
-    scope: "public_profile"
-) { credential, request, context in
-    return Response(body: "\(credential)")
+    scope: "public_profile,email"
+) { credential, user, request, context in
+    return Response(body: "\(user)")
 }
 
 let githubProvider = GithubAuthorizationProvider(
@@ -43,8 +43,8 @@ let githubProvider = GithubAuthorizationProvider(
     consumerSecret: ProcessInfo.processInfo.environment["GITHUB_APP_SECRET"] ?? "",
     callbackURL: CallbackURL(baseURL: APP_URL, path: "/auth/github/callback"),
     scope: "user,repo"
-) { credential, request, context in
-    return Response(body: "\(credential)")
+) { credential, user, request, context in
+    return Response(body: "\(user)")
 }
 
 let googleProvider = GoogleAuthorizationProvider(
@@ -53,7 +53,7 @@ let googleProvider = GoogleAuthorizationProvider(
     consumerSecret: ProcessInfo.processInfo.environment["GOOGLE_APP_SECRET"] ?? "",
     callbackURL: CallbackURL(baseURL: APP_URL, path: "/auth/google/callback"),
     scope: "https://www.googleapis.com/auth/drive"
-) { credential, request, context in
+) { credential, user, request, context in
     return Response(body: "\(credential)")
 }
 
@@ -63,7 +63,7 @@ let instagramProvider = InstagramAuthorizationProvider(
     consumerSecret: ProcessInfo.processInfo.environment["INSTAGRAM_APP_SECRET"] ?? "",
     callbackURL: CallbackURL(baseURL: APP_URL, path: "/auth/instagram/callback"),
     scope: "basic"
-) { credential, request, context in
+) { credential, user, request, context in
     return Response(body: "\(credential)")
 }
 
@@ -73,8 +73,8 @@ let twitterProvider = TwitterAuthorizationProvider(
     consumerSecret: ProcessInfo.processInfo.environment["TWITTER_APP_SECRET"] ?? "",
     callbackURL: CallbackURL(baseURL: APP_URL, path: "/auth/twitter/callback"),
     scope: ""
-) { credential, request, context in
-    return Response(body: "\(credential)")
+) { credential, user, request, context in
+    return Response(body: "\(user)")
 }
 
 auth.add(facebookProvider)
