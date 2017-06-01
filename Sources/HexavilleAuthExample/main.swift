@@ -83,11 +83,14 @@ auth.add(googleProvider)
 auth.add(instagramProvider)
 auth.add(twitterProvider)
 
+app.use(auth.authenticationMiddleware())
+
 app.use(auth.asRouter())
+
 
 let router = Router()
 
-router.use(.get, "/") { _ in
+router.use(.get, "/") { req, context in
     return Response(body: "Welcome to Hexaville Auth")
 }
 
