@@ -64,11 +64,11 @@ let facebookProvider = FacebookAuthorizationProvider(
     consumerSecret: ProcessInfo.processInfo.environment["FACEBOOK_APP_SECRET"] ?? "",
     callbackURL: CallbackURL(baseURL: APP_URL, path: "/auth/facebook/callback"),
     scope: "public_profile"
-) { credential, request, context in
+) { credential, user, request, context in
 
     // here is called when the access_token got successfully from sns.
 
-    return Response(body: "\(credential)")
+    return Response(body: "\(user)")
 }
 
 auth.add(facebookProvider)
@@ -171,11 +171,11 @@ let salesforceProvider = SalesforceAuthorizationProvider(
     consumerSecret: "secret",
     callbackURL: CallbackURL(baseURL: APP_URL, path: "/auth/salesforce/callback"),
     scope: "public_profile"
-) { credential, request, context in
+) { credential, user, request, context in
 
     try DB.save(token: credential.accessToken)
 
-    return Response(body: "\(credential)")
+    return Response(body: "\(user)")
 }
 
 auth.add(salesforceProvider)
