@@ -9,7 +9,7 @@
 import Foundation
 import HexavilleFramework
 
-public typealias RespodWithCredential = (Credential, Request, ApplicationContext) throws -> Response
+public typealias RespodWithCredential = (Credential, LoginUser, Request, ApplicationContext) throws -> Response
 
 public protocol OAuth2AuthorizationProvidable {
     var path: String { get }
@@ -17,6 +17,7 @@ public protocol OAuth2AuthorizationProvidable {
     var callback: RespodWithCredential { get }
     init(path: String, consumerKey: String, consumerSecret: String, callbackURL: CallbackURL, scope: String, callback: @escaping RespodWithCredential)
     func getAccessToken(request: Request) throws -> Credential
+    func authorize(request: Request) throws -> (Credential, LoginUser)
 }
 
 extension OAuth2AuthorizationProvidable {

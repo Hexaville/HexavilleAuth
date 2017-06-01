@@ -17,6 +17,7 @@ public protocol OAuth1AuthorizationProvidable {
     func getRequestToken() throws -> RequestToken
     func createAuthorizeURL(requestToken: RequestToken) throws -> URL
     func getAccessToken(request: Request, requestToken: RequestToken) throws -> Credential
+    func authorize(request: Request, requestToken: RequestToken) throws -> (Credential, LoginUser)
 }
 
 extension OAuth1AuthorizationProvidable {

@@ -55,8 +55,8 @@ public struct HexavilleAuth {
                         oauthCallbackConfirmed: nil
                     )
                     
-                    let cred = try provider.getAccessToken(request: request, requestToken: requestToken)
-                    return try provider.callback(cred, request, context)
+                    let (cred, user) = try provider.authorize(request: request, requestToken: requestToken)
+                    return try provider.callback(cred, user, request, context)
                 }
 
                 
@@ -71,8 +71,8 @@ public struct HexavilleAuth {
                 }
                 
                 router.use(.get, provider.oauth.callbackURL.path) { request, context in
-                    let cred = try provider.getAccessToken(request: request)
-                    return try provider.callback(cred, request, context)
+                    let (cred, user) = try provider.authorize(request: request)
+                    return try provider.callback(cred, user, request, context)
                 }
             }
         }
