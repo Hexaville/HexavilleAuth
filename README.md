@@ -11,7 +11,8 @@ HexavilleAuth automatically creates resources for authorize/callback for each sn
 
 ## Authentication Methods
 * [ ] Email+password
-* [x] SNS+OAuth
+* [x] OAuth1
+* [x] OAuth2
 
 ## Supported SNS Platforms
 
@@ -23,7 +24,7 @@ HexavilleAuth automatically creates resources for authorize/callback for each sn
 * [x] Instagram
 
 ### OAuth1
-* [ ] Twitter
+* [x] Twitter
 
 ## Installation
 
