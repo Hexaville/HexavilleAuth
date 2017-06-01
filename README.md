@@ -11,6 +11,8 @@ HexavilleAuth automatically creates resources for authorize/callback for each sn
 
 ## Authentication Methods
 * [ ] Email+password
+
+## Authorization Methods
 * [x] OAuth1
 * [x] OAuth2
 
@@ -43,7 +45,7 @@ let package = Package(
 
 ## Usage
 
-Here is an example code for facebook oauth authentication with [HexavilleFramework](https://github.com/noppoMan/HexavilleFramework)
+Here is an example code for facebook oauth authorization with [HexavilleFramework](https://github.com/noppoMan/HexavilleFramework)
 
 ```swift
 import Foundation
@@ -56,7 +58,7 @@ var auth = HexavilleAuth()
 
 let APP_URL = ProcessInfo.processInfo.environment["APP_URL"] ?? "http://localhost:3000"
 
-let facebookProvider = FacebookAuthenticationProvider(
+let facebookProvider = FacebookAuthorizationProvider(
     path: "/auth/facebook",
     consumerKey: ProcessInfo.processInfo.environment["FACEBOOK_APP_ID"] ?? "",
     consumerSecret: ProcessInfo.processInfo.environment["FACEBOOK_APP_SECRET"] ?? "",
@@ -107,22 +109,22 @@ cd swift build
 
 ### Resources
 
-Try to access following resources to authentication with Browser!
+Try to access following resources to authentication/authorization with Browser!
 
 * Facebook: http://yourlocaldomain:3000/auth/facebook
 * Github: http://yourlocaldomain:3000/auth/github
 * Instagram: http://yourlocaldomain:3000/auth/instagram
 * Google: http://yourlocaldomain:3000/auth/google
 
-# Create Your Custom Authentication Provider
+# Create Your Custom Authorization/Authentication Provider
 
-You can create Custom Authentication Provider with `OAuthXAuthentitionProvidable`
+You can create Custom Authorization/Authentication Provider with `OAuthXAuthorizationProvidable`/ `AuthenticationProvidable`
 
 ## Oauth2
 
-#### OAuth2AuthentitionProvidable
+#### OAuth2Authorization
 ```swift
-public protocol OAuth2AuthentitionProvidable {
+public protocol OAuth2AuthorizationProvidable {
     var path: String { get } // path for authorize
     var oauth: OAuth2 { get }
     var callback: RespodWithCredential { get }  // callback for success handler
@@ -131,10 +133,10 @@ public protocol OAuth2AuthentitionProvidable {
 }
 ```
 
-here is an example for Salesforce Authentication.
+here is an example for Salesforce Authorization.
 
 ```swift
-public struct SalesforceAuthenticationProvider: OAuth2AuthentitionProvidable {
+public struct SalesforceAuthorizationProvider: OAuth2AuthorizationProvidable {
 
     public let path: String
 
@@ -142,7 +144,7 @@ public struct SalesforceAuthenticationProvider: OAuth2AuthentitionProvidable {
 
     public let callback: RespodWithCredential
 
-    public init(path: String, consumerKey: String, consumerSecret: String, callbackURL: String, scope: String, callback: @escaping RespodWithCredential) {
+    public init(path: String, consumerKey: String, consumerSecret: String, callbackURL: CallbackURL, scope: String, callback: @escaping RespodWithCredential) {
         self.path = path
 
         self.oauth = OAuth2(
@@ -163,7 +165,7 @@ Use it!
 ```swift
 var auth = HexavilleAuth()
 
-let salesforceProvider = SalesforceAuthenticationProvider(
+let salesforceProvider = SalesforceAuthorizationProvider(
     path: "/auth/salesforce",
     consumerKey: "consumer",
     consumerSecret: "secret",

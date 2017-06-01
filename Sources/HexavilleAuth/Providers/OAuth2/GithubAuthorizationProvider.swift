@@ -1,15 +1,15 @@
 //
-//  FacebookAuthenticationProvider.swift
+//  GithubAuthorizationProvider.swift
 //  HexavilleAuth
 //
-//  Created by Yuki Takei on 2017/05/30.
+//  Created by Yuki Takei on 2017/05/31.
 //
 //
 
 import Foundation
 import HexavilleFramework
 
-public struct FacebookAuthenticationProvider: OAuth2AuthentitionProvidable {
+public struct GithubAuthorizationProvider: OAuth2AuthorizationProvidable {
     
     public let path: String
     
@@ -23,8 +23,8 @@ public struct FacebookAuthenticationProvider: OAuth2AuthentitionProvidable {
         self.oauth = OAuth2(
             consumerKey: consumerKey,
             consumerSecret: consumerSecret,
-            authorizeURL: "https://www.facebook.com/dialog/oauth",
-            accessTokenURL: "https://graph.facebook.com/oauth/access_token",
+            authorizeURL: "http://github.com/login/oauth/authorize",
+            accessTokenURL: "https://github.com/login/oauth/access_token",
             callbackURL: callbackURL,
             scope: scope
         )
@@ -32,3 +32,4 @@ public struct FacebookAuthenticationProvider: OAuth2AuthentitionProvidable {
         self.callback = callback
     }
 }
+

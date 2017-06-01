@@ -1,5 +1,5 @@
 //
-//  OAuth1AuthentitionProvidable.swift
+//  OAuth1AuthorizationProvidable.swift
 //  HexavilleAuth
 //
 //  Created by Yuki Takei on 2017/05/31.
@@ -9,7 +9,7 @@
 import Foundation
 import HexavilleFramework
 
-public protocol OAuth1AuthentitionProvidable {
+public protocol OAuth1AuthorizationProvidable {
     var path: String { get }
     var oauth: OAuth1 { get }
     var callback: RespodWithCredential { get }
@@ -19,7 +19,7 @@ public protocol OAuth1AuthentitionProvidable {
     func getAccessToken(request: Request, requestToken: RequestToken) throws -> Credential
 }
 
-extension OAuth1AuthentitionProvidable {
+extension OAuth1AuthorizationProvidable {
     public func getRequestToken() throws -> RequestToken {
         return try oauth.getRequestToken()
     }

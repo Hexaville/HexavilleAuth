@@ -1,5 +1,5 @@
 //
-//  TwitterAuthenticationProvider.swift
+//  TwitterAuthorizationProvider.swift
 //  HexavilleAuth
 //
 //  Created by Yuki Takei on 2017/05/31.
@@ -17,7 +17,7 @@ internal extension CharacterSet {
     }
 }
 
-public struct TwitterAuthenticationProvider: OAuth1AuthentitionProvidable {
+public struct TwitterAuthorizationProvider: OAuth1AuthorizationProvidable {
     
     public let path: String
     

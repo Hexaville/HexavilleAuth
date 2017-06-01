@@ -1,5 +1,5 @@
 //
-//  GoogleAuthenticationProvider.swift
+//  InstagramAuthorizationProvider.swift
 //  HexavilleAuth
 //
 //  Created by Yuki Takei on 2017/05/31.
@@ -9,7 +9,7 @@
 import Foundation
 import HexavilleFramework
 
-public struct GoogleAuthenticationProvider: OAuth2AuthentitionProvidable {
+public struct InstagramAuthorizationProvider: OAuth2AuthorizationProvidable {
     
     public let path: String
     
@@ -23,8 +23,8 @@ public struct GoogleAuthenticationProvider: OAuth2AuthentitionProvidable {
         self.oauth = OAuth2(
             consumerKey: consumerKey,
             consumerSecret: consumerSecret,
-            authorizeURL: "https://accounts.google.com/o/oauth2/auth",
-            accessTokenURL: "https://accounts.google.com/o/oauth2/token",
+            authorizeURL: "https://api.instagram.com/oauth/authorize",
+            accessTokenURL: "https://api.instagram.com/oauth/access_token",
             callbackURL: callbackURL,
             scope: scope
         )
@@ -32,3 +32,4 @@ public struct GoogleAuthenticationProvider: OAuth2AuthentitionProvidable {
         self.callback = callback
     }
 }
+

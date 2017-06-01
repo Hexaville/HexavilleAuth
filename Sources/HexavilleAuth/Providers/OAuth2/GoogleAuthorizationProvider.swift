@@ -1,5 +1,5 @@
 //
-//  GithubAuthenticationProvider.swift
+//  GoogleAuthorizationProvider.swift
 //  HexavilleAuth
 //
 //  Created by Yuki Takei on 2017/05/31.
@@ -9,7 +9,7 @@
 import Foundation
 import HexavilleFramework
 
-public struct GithubAuthenticationProvider: OAuth2AuthentitionProvidable {
+public struct GoogleAuthorizationProvider: OAuth2AuthorizationProvidable {
     
     public let path: String
     
@@ -23,8 +23,8 @@ public struct GithubAuthenticationProvider: OAuth2AuthentitionProvidable {
         self.oauth = OAuth2(
             consumerKey: consumerKey,
             consumerSecret: consumerSecret,
-            authorizeURL: "http://github.com/login/oauth/authorize",
-            accessTokenURL: "https://github.com/login/oauth/access_token",
+            authorizeURL: "https://accounts.google.com/o/oauth2/auth",
+            accessTokenURL: "https://accounts.google.com/o/oauth2/token",
             callbackURL: callbackURL,
             scope: scope
         )
@@ -32,4 +32,3 @@ public struct GithubAuthenticationProvider: OAuth2AuthentitionProvidable {
         self.callback = callback
     }
 }
-

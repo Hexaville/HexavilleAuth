@@ -7,21 +7,21 @@ public enum HexavilleAuthError: Error {
     case responseError(Response)
 }
 
-public enum AuthenticationProviderType {
-    case oauth2(OAuth2AuthentitionProvidable)
-    case oauth1(OAuth1AuthentitionProvidable)
+public enum CredentialProviderType {
+    case oauth2(OAuth2AuthorizationProvidable)
+    case oauth1(OAuth1AuthorizationProvidable)
 }
 
 public struct HexavilleAuth {
-    var providers: [AuthenticationProviderType] = []
+    var providers: [CredentialProviderType] = []
     
     public init() {}
     
-    public mutating func add(_ provider: OAuth1AuthentitionProvidable) {
+    public mutating func add(_ provider: OAuth1AuthorizationProvidable) {
         self.providers.append(.oauth1(provider))
     }
     
-    public mutating func add(_ provider: OAuth2AuthentitionProvidable) {
+    public mutating func add(_ provider: OAuth2AuthorizationProvidable) {
         self.providers.append(.oauth2(provider))
     }
     

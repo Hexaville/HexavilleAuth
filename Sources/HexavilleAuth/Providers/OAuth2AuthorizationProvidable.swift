@@ -1,5 +1,5 @@
 //
-//  OAuth2AuthentitionProvidable.swift
+//  OAuth2AuthorizationProvidable.swift
 //  HexavilleAuth
 //
 //  Created by Yuki Takei on 2017/05/31.
@@ -11,7 +11,7 @@ import HexavilleFramework
 
 public typealias RespodWithCredential = (Credential, Request, ApplicationContext) throws -> Response
 
-public protocol OAuth2AuthentitionProvidable {
+public protocol OAuth2AuthorizationProvidable {
     var path: String { get }
     var oauth: OAuth2 { get }
     var callback: RespodWithCredential { get }
@@ -19,7 +19,7 @@ public protocol OAuth2AuthentitionProvidable {
     func getAccessToken(request: Request) throws -> Credential
 }
 
-extension OAuth2AuthentitionProvidable {
+extension OAuth2AuthorizationProvidable {
     public func createAuthorizeURL() throws -> URL {
         return try oauth.createAuthorizeURL()
     }

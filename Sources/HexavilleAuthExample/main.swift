@@ -27,7 +27,7 @@ var auth = HexavilleAuth()
 
 let APP_URL = ProcessInfo.processInfo.environment["APP_URL"] ?? "http://localhsot:3000"
 
-let facebookProvider = FacebookAuthenticationProvider(
+let facebookProvider = FacebookAuthorizationProvider(
     path: "/auth/facebook",
     consumerKey: ProcessInfo.processInfo.environment["FACEBOOK_APP_ID"] ?? "",
     consumerSecret: ProcessInfo.processInfo.environment["FACEBOOK_APP_SECRET"] ?? "",
@@ -37,7 +37,7 @@ let facebookProvider = FacebookAuthenticationProvider(
     return Response(body: "\(credential)")
 }
 
-let githubProvider = GithubAuthenticationProvider(
+let githubProvider = GithubAuthorizationProvider(
     path: "/auth/github",
     consumerKey: ProcessInfo.processInfo.environment["GITHUB_APP_ID"] ?? "",
     consumerSecret: ProcessInfo.processInfo.environment["GITHUB_APP_SECRET"] ?? "",
@@ -47,7 +47,7 @@ let githubProvider = GithubAuthenticationProvider(
     return Response(body: "\(credential)")
 }
 
-let googleProvider = GoogleAuthenticationProvider(
+let googleProvider = GoogleAuthorizationProvider(
     path: "/auth/google",
     consumerKey: ProcessInfo.processInfo.environment["GOOGLE_APP_ID"] ?? "",
     consumerSecret: ProcessInfo.processInfo.environment["GOOGLE_APP_SECRET"] ?? "",
@@ -57,7 +57,7 @@ let googleProvider = GoogleAuthenticationProvider(
     return Response(body: "\(credential)")
 }
 
-let instagramProvider = InstagramAuthenticationProvider(
+let instagramProvider = InstagramAuthorizationProvider(
     path: "/auth/instagram",
     consumerKey: ProcessInfo.processInfo.environment["INSTAGRAM_APP_ID"] ?? "",
     consumerSecret: ProcessInfo.processInfo.environment["INSTAGRAM_APP_SECRET"] ?? "",
@@ -67,7 +67,7 @@ let instagramProvider = InstagramAuthenticationProvider(
     return Response(body: "\(credential)")
 }
 
-let twitterProvider = TwitterAuthenticationProvider(
+let twitterProvider = TwitterAuthorizationProvider(
     path: "/auth/twitter",
     consumerKey: ProcessInfo.processInfo.environment["TWITTER_APP_ID"] ?? "",
     consumerSecret: ProcessInfo.processInfo.environment["TWITTER_APP_SECRET"] ?? "",
