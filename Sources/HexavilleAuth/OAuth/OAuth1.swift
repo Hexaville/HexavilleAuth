@@ -104,6 +104,42 @@ public class OAuth1 {
         return URL(string: self.authorizeUrl+"?oauth_token="+requestToken.oauthToken)!
     }
     
+    public func verify(credential: Credential, verifyURL: String) throws -> [String: Any] {
+        var params = [
+            "oauth_consumer_key" : consumerKey,
+            "oauth_nonce" : OAuth1.generateNonce(),
+            "oauth_signature_method" : "HMAC-SHA1",
+            "oauth_timestamp" : String(Int64(Date().timeIntervalSince1970)),
+            "oauth_token" : credential.accessToken,
+            "oauth_version" : "1.0A"
+        ]
+        
+        guard let sig = signature(
+            method: "GET",
+            urlString: verifyURL,
+            parameters: params,
+            oauthToken: credential.raw["oauth_token_secret"] as? String,
+            withAllowedCharacters: withAllowedCharacters
+            ) else {
+                throw OAuth1Error.couldNotGenerateSignature
+        }
+        
+        params["oauth_signature"] = sig
+        
+        var urlRequest = URLRequest(url: URL(string: verifyURL)!)
+        urlRequest.httpMethod = "GET"
+        
+        urlRequest.addValue(OAuth1.oAuthAuthorizationString(fromParameters: params, withAllowedCharacters: withAllowedCharacters), forHTTPHeaderField: "Authorization")
+        
+        let (response, data) = try URLSession.shared.resumeSync(with: urlRequest)
+        
+        guard (200..<300).contains(response.statusCode) else {
+            throw HexavilleAuthError.responseError(response.transform(withBodyData: data))
+        }
+        
+        return try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
+    }
+    
     public func getAccessToken(request: Request, requestToken: RequestToken) throws -> Credential {
         guard let oauthToken = request.queryItems.filter({ $0.name == "oauth_token" }).first?.value else {
             throw OAuth1Error.missingRequiredParameters("oauth_token")
