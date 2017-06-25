@@ -83,10 +83,9 @@ auth.add(googleProvider)
 auth.add(instagramProvider)
 auth.add(twitterProvider)
 
-app.use(auth.authenticationMiddleware())
+app.use(HexavilleAuth.AuthenticationMiddleware())
 
-app.use(auth.asRouter())
-
+app.use(auth)
 
 let router = Router()
 
