@@ -73,7 +73,7 @@ let facebookProvider = FacebookAuthorizationProvider(
 
 auth.add(facebookProvider)
 
-app.use(auth.asRouter())
+app.use(auth)
 
 app.catch { error in
     switch error {
@@ -83,6 +83,60 @@ app.catch { error in
         return Response(body: "\(error)")
     }
 }
+
+try app.run()
+```
+
+## Getting loginUser object on the every requests.
+
+If you register `HexavilleAuth.AuthenticationMiddleware` and loginUser information is stored in the session, You can get it from `ApplicationContext` as `LoginUser` Object.
+
+### LoginUser
+```swift
+public struct LoginUser {
+    public let id: String
+    public let name: String
+    public let screenName: String?
+    public let email: String?
+    public let picture: String?
+    public let raw: [String: Any]
+}
+```
+
+### Example
+
+```swift
+import Foundation
+import HexavilleAuth
+import HexavilleFramework
+
+let app = HexavilleFramework()
+
+var auth = HexavilleAuth()
+
+let APP_URL = ProcessInfo.processInfo.environment["APP_URL"] ?? "http://localhost:3000"
+
+let twitterProvider = TwitterAuthorizationProvider(
+    path: "/auth/twitter",
+    consumerKey: ProcessInfo.processInfo.environment["TWITTER_APP_ID"] ?? "",
+    consumerSecret: ProcessInfo.processInfo.environment["TWITTER_APP_SECRET"] ?? "",
+    callbackURL: CallbackURL(baseURL: APP_URL, path: "/auth/twitter/callback"),
+    scope: ""
+) { credential, user, request, context in
+    return Response(body: "\(user)")
+}
+
+app.use(HexavilleAuth.AuthenticationMiddleware()) // register to get loginUser Object
+
+app.use { req, context in
+  print(context.isAuthenticated()) // => true
+  print(context.loginUser) // Get the loginUser object
+  return .next(req)
+}
+
+auth.add(twitterProvider)
+
+app.use(auth)
 
 try app.run()
 ```
