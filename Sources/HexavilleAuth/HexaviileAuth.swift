@@ -7,6 +7,23 @@ public enum HexavilleAuthError: Error {
     case responseError(Response)
 }
 
+extension HexavilleAuthError: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .responseError(let response):
+            var str = ""
+            str += "\(response)"
+            str += "\n"
+            str += "\n"
+            str += String(data: response.body.asData(), encoding: .utf8) ?? "Unknown Error"
+            return str
+            
+        default:
+            return "\(self)"
+        }
+    }
+}
+
 public enum CredentialProviderType {
     case oauth2(OAuth2AuthorizationProvidable)
     case oauth1(OAuth1AuthorizationProvidable)
