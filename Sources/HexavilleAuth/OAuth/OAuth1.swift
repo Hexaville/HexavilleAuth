@@ -240,8 +240,7 @@ extension OAuth1 {
         let rawString = [method, percentEncodedUrl, percentEncodedJoinedParameters].joined(separator: "&")
         let encodedRawBytes =  hmacsha1(string: rawString, key: (percentEncodedConsumerSecret + "&" + (oauthToken ?? "")).bytes)
         
-        let encodedData = Data(bytes: encodedRawBytes)
-        let encodedString = encodedData.base64EncodedString()
+        let encodedString = String(bytes: Base64Encoder.shared.encode(encodedRawBytes), encoding: .utf8) ?? ""
         
         return encodedString.addingPercentEncoding(withAllowedCharacters: withAllowedCharacters)!
     }
