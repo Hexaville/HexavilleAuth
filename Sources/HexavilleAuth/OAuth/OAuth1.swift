@@ -15,6 +15,66 @@ public enum OAuth1Error: Error {
     case invalidAuthrozeURL(String)
     case missingRequiredParameters(String)
     case accessTokenIsMissingInSession
+    case verifyFailed(Request, Response)
+    case failedToGetAccessToken(Request, Response)
+    case failedToGetRequestToken(Request, Response)
+}
+
+extension OAuth1Error: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .verifyFailed(let req, let res):
+            return stringify(code: "verifyFailed", request: req, response: res)
+            
+        case .failedToGetAccessToken(let req, let res):
+            return stringify(code: "failedToGetAccessToken", request: req, response: res)
+            
+        case .failedToGetRequestToken(let req, let res):
+            return stringify(code: "failedToGetRequestToken", request: req, response: res)
+            
+        default:
+            return "\(self)"
+        }
+    }
+    
+    private func stringify(code: String, request: Request, response: Response) -> String {
+        var requestHeaders: [String: String] = [:]
+        for (key, value) in request.headers {
+            requestHeaders[key.description] = value
+        }
+        
+        var responseHeaders: [String: String] = [:]
+        for (key, value) in response.headers {
+            responseHeaders[key.description] = value
+        }
+        
+        let requestDict: [String: Any] = [
+            "method": request.method.rawValue,
+            "url": request.url.absoluteString,
+            "headers": requestHeaders,
+            "body": String(data: request.body.asData(), encoding: .utf8) ?? ""
+        ]
+        
+        let responseDict: [String: Any] = [
+            "statusCode": response.statusCode,
+            "headers": responseHeaders,
+            "body": String(data: response.body.asData(), encoding: .utf8) ?? ""
+        ]
+        
+        do {
+            let json = try JSONSerialization.data(
+                withJSONObject: [
+                    "errorCode": code,
+                    "request": requestDict,
+                    "response": responseDict
+                ],
+                options: [.prettyPrinted]
+            )
+            return String(data: json, encoding: .utf8) ?? ""
+        } catch {
+            return "\(error)"
+        }
+    }
 }
 
 public struct RequestToken {
@@ -73,7 +133,10 @@ public class OAuth1 {
         let bodyDictionary = OAuth1.parse(bodyData: data)
         
         guard (200..<300).contains(response.statusCode) else {
-            throw HexavilleAuthError.responseError(response.transform(withBodyData: data))
+            throw OAuth1Error.failedToGetRequestToken(
+                urlRequest.transform(),
+                response.transform(withBodyData: data)
+            )
         }
         
         guard let oauthToken = bodyDictionary["oauth_token"] else {
@@ -134,7 +197,10 @@ public class OAuth1 {
         let (response, data) = try URLSession.shared.resumeSync(with: urlRequest)
         
         guard (200..<300).contains(response.statusCode) else {
-            throw HexavilleAuthError.responseError(response.transform(withBodyData: data))
+            throw OAuth1Error.verifyFailed(
+                urlRequest.transform(),
+                response.transform(withBodyData: data)
+            )
         }
         
         return try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
@@ -167,8 +233,8 @@ public class OAuth1 {
             parameters: params,
             oauthToken: requestToken.oauthTokenSecret,
             withAllowedCharacters: withAllowedCharacters
-        ) else {
-            throw OAuth1Error.couldNotGenerateSignature
+            ) else {
+                throw OAuth1Error.couldNotGenerateSignature
         }
         
         params["oauth_signature"] = sig
@@ -181,7 +247,10 @@ public class OAuth1 {
         let (response, data) = try URLSession.shared.resumeSync(with: urlRequest)
         
         guard (200..<300).contains(response.statusCode) else {
-            throw HexavilleAuthError.responseError(response.transform(withBodyData: data))
+            throw OAuth1Error.failedToGetAccessToken(
+                urlRequest.transform(),
+                response.transform(withBodyData: data)
+            )
         }
         
         return try Credential(withDictionary: OAuth1.parse(bodyData: data))
