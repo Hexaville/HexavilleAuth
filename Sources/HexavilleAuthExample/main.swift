@@ -96,12 +96,8 @@ router.use(.get, "/") { req, context in
 app.use(router)
 
 app.catch { error in
-    switch error {
-    case HexavilleAuthError.responseError(let response):
-        return Response(status: .badRequest, body: response.body.asData())
-    default:
-        return Response(body: "\(error)")
-    }
+    print(error)
+    return Response(status: .badRequest, body: "\(error)")
 }
 
 try app.run()
