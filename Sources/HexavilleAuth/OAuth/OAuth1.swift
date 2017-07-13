@@ -23,6 +23,18 @@ public enum OAuth1Error: Error {
 extension OAuth1Error: CustomStringConvertible {
     public var description: String {
         switch self {
+        case .couldNotGenerateSignature:
+            return "couldNotGenerateSignature"
+            
+        case .invalidAuthrozeURL(let url):
+            return "invalidAuthrozeURL: \(url)"
+            
+        case .missingRequiredParameters(let param):
+            return "missingRequiredParameter: \(param)"
+            
+        case .accessTokenIsMissingInSession:
+            return "accessTokenIsMissingInSession"
+            
         case .verifyFailed(let req, let res):
             return stringify(code: "verifyFailed", request: req, response: res)
             
@@ -31,9 +43,6 @@ extension OAuth1Error: CustomStringConvertible {
             
         case .failedToGetRequestToken(let req, let res):
             return stringify(code: "failedToGetRequestToken", request: req, response: res)
-            
-        default:
-            return "\(self)"
         }
     }
     
@@ -123,21 +132,22 @@ public class OAuth1 {
         
         params["oauth_signature"] = sig
         
-        var urlRequest = URLRequest(url: URL(string: requestTokenUrl)!)
-        urlRequest.httpMethod = "POST"
+        let authorizationValue = OAuth1.oAuthAuthorizationString(fromParameters: params, withAllowedCharacters: withAllowedCharacters)
         
-        urlRequest.addValue(OAuth1.oAuthAuthorizationString(fromParameters: params, withAllowedCharacters: withAllowedCharacters), forHTTPHeaderField: "Authorization")
-        
-        let (response, data) = try URLSession.shared.resumeSync(with: urlRequest)
-        
-        let bodyDictionary = OAuth1.parse(bodyData: data)
+        let request = Request(
+            method: .post,
+            url: URL(string: requestTokenUrl)!,
+            headers: ["Authorization": authorizationValue]
+        )
+        let client = try HTTPClient(url: request.url)
+        try client.open()
+        let response = try client.request(request)
         
         guard (200..<300).contains(response.statusCode) else {
-            throw OAuth1Error.failedToGetRequestToken(
-                urlRequest.transform(),
-                response.transform(withBodyData: data)
-            )
+            throw OAuth1Error.failedToGetRequestToken(request, response)
         }
+        
+        let bodyDictionary = OAuth1.parse(bodyData: response.body.asData())
         
         guard let oauthToken = bodyDictionary["oauth_token"] else {
             throw OAuth1Error.missingRequiredParameters("oauth_token")
@@ -189,21 +199,23 @@ public class OAuth1 {
         
         params["oauth_signature"] = sig
         
-        var urlRequest = URLRequest(url: URL(string: verifyURL)!)
-        urlRequest.httpMethod = "GET"
+        let authrozationString = OAuth1.oAuthAuthorizationString(fromParameters: params, withAllowedCharacters: withAllowedCharacters)
         
-        urlRequest.addValue(OAuth1.oAuthAuthorizationString(fromParameters: params, withAllowedCharacters: withAllowedCharacters), forHTTPHeaderField: "Authorization")
+        let request = Request(
+            method: .get,
+            url: URL(string: verifyURL)!,
+            headers: ["Authorization": authrozationString]
+        )
         
-        let (response, data) = try URLSession.shared.resumeSync(with: urlRequest)
+        let client = try HTTPClient(url: request.url)
+        try client.open()
+        let response = try client.request(request)
         
         guard (200..<300).contains(response.statusCode) else {
-            throw OAuth1Error.verifyFailed(
-                urlRequest.transform(),
-                response.transform(withBodyData: data)
-            )
+            throw OAuth1Error.verifyFailed(request, response)
         }
         
-        return try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
+        return try JSONSerialization.jsonObject(with: response.body.asData(), options: []) as? [String: Any] ?? [:]
     }
     
     public func getAccessToken(request: Request, requestToken: RequestToken) throws -> Credential {
@@ -239,21 +251,23 @@ public class OAuth1 {
         
         params["oauth_signature"] = sig
         
-        var urlRequest = URLRequest(url: URL(string: urlString)!)
-        urlRequest.httpMethod = "POST"
+        let authrozationString = OAuth1.oAuthAuthorizationString(fromParameters: params, withAllowedCharacters: withAllowedCharacters)
         
-        urlRequest.addValue(OAuth1.oAuthAuthorizationString(fromParameters: params, withAllowedCharacters: withAllowedCharacters), forHTTPHeaderField: "Authorization")
+        let request = Request(
+            method: .post,
+            url: URL(string: urlString)!,
+            headers: ["Authorization": authrozationString]
+        )
         
-        let (response, data) = try URLSession.shared.resumeSync(with: urlRequest)
+        let client = try HTTPClient(url: request.url)
+        try client.open()
+        let response = try client.request(request)
         
         guard (200..<300).contains(response.statusCode) else {
-            throw OAuth1Error.failedToGetAccessToken(
-                urlRequest.transform(),
-                response.transform(withBodyData: data)
-            )
+            throw OAuth1Error.failedToGetAccessToken(request, response)
         }
         
-        return try Credential(withDictionary: OAuth1.parse(bodyData: data))
+        return try Credential(withDictionary: OAuth1.parse(bodyData: response.body.asData()))
     }
 }
 
