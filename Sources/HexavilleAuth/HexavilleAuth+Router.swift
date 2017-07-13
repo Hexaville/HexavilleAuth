@@ -21,7 +21,9 @@ extension HexavilleAuth {
                     context.session?["hexaville.oauth_token"] = requestToken.oauthToken
                     let location = try provider.createAuthorizeURL(requestToken: requestToken).absoluteString
                     
-                    return Response(status: .found, headers: ["Location": location])
+                    var headers = context.responseHeaders
+                    headers["Location"] = location
+                    return Response(status: .found, headers: headers)
                 }
                 
                 router.use(.get, provider.oauth.callbackURL.path) { request, context in
