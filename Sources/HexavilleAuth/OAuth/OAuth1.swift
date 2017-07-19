@@ -100,15 +100,17 @@ public class OAuth1 {
     let authorizeUrl: String
     let accessTokenUrl: String
     let callbackURL: CallbackURL
+    let blockForCallbackURLQueryParams: ((Request) -> [URLQueryItem])?
     let withAllowedCharacters: CharacterSet
     
-    public init(consumerKey: String, consumerSecret: String, requestTokenUrl: String, authorizeUrl: String, accessTokenUrl: String, callbackURL: CallbackURL, withAllowedCharacters: CharacterSet = CharacterSet.alphanumerics) {
+    public init(consumerKey: String, consumerSecret: String, requestTokenUrl: String, authorizeUrl: String, accessTokenUrl: String, callbackURL: CallbackURL, blockForCallbackURLQueryParams: ((Request) -> [URLQueryItem])? = nil, withAllowedCharacters: CharacterSet = CharacterSet.alphanumerics) {
         self.consumerKey = consumerKey
         self.consumerSecret = consumerSecret
         self.requestTokenUrl = requestTokenUrl
         self.authorizeUrl = authorizeUrl
         self.accessTokenUrl = accessTokenUrl
         self.callbackURL = callbackURL
+        self.blockForCallbackURLQueryParams = blockForCallbackURLQueryParams
         self.withAllowedCharacters = withAllowedCharacters
     }
     
@@ -116,9 +118,9 @@ public class OAuth1 {
         return dict.map({ "\($0.key)=\($0.value)" }).joined(separator: "&")
     }
     
-    public func getRequestToken() throws -> RequestToken {
+    public func getRequestToken(withCallbackURLQueryItems queryItems: [URLQueryItem]) throws -> RequestToken {
         var params = [
-            "oauth_callback": callbackURL.absoluteURL()!.absoluteString,
+            "oauth_callback": callbackURL.absoluteURL(withQueryItems: queryItems)!.absoluteString,
             "oauth_consumer_key": consumerKey,
             "oauth_nonce": OAuth1.generateNonce(),
             "oauth_signature_method": "HMAC-SHA1",

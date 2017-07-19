@@ -16,7 +16,8 @@ extension HexavilleAuth {
             switch type {
             case .oauth1(let provider):
                 router.use(.get, provider.path) { request, context in
-                    let requestToken = try provider.getRequestToken()
+                    let queryItems: [URLQueryItem] = provider.oauth.blockForCallbackURLQueryParams?(request) ?? []
+                    let requestToken = try provider.getRequestToken(withCallbackURLQueryItems: queryItems)
                     context.session?["hexaville.oauth_token_secret"] = requestToken.oauthTokenSecret
                     context.session?["hexaville.oauth_token"] = requestToken.oauthToken
                     let location = try provider.createAuthorizeURL(requestToken: requestToken).absoluteString

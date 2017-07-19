@@ -25,7 +25,7 @@ public struct TwitterAuthorizationProvider: OAuth1AuthorizationProvidable {
     
     public let callback: RespodWithCredential
     
-    public init(path: String, consumerKey: String, consumerSecret: String, callbackURL: CallbackURL, scope: String, callback: @escaping RespodWithCredential) {
+    public init(path: String, consumerKey: String, consumerSecret: String, callbackURL: CallbackURL, blockForCallbackURLQueryParams: ((Request) -> [URLQueryItem])? = nil, scope: String, callback: @escaping RespodWithCredential) {
         self.path = path
         
         self.oauth = OAuth1(
@@ -35,6 +35,7 @@ public struct TwitterAuthorizationProvider: OAuth1AuthorizationProvidable {
             authorizeUrl: "https://api.twitter.com/oauth/authenticate",
             accessTokenUrl: "https://api.twitter.com/oauth/access_token",
             callbackURL: callbackURL,
+            blockForCallbackURLQueryParams: blockForCallbackURLQueryParams,
             withAllowedCharacters: .twitterQueryAllowed
         )
         
