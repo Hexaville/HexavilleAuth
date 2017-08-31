@@ -17,7 +17,7 @@ public struct GoogleAuthorizationProvider: OAuth2AuthorizationProvidable {
     
     public let callback: RespodWithCredential
     
-    public init(path: String, consumerKey: String, consumerSecret: String, callbackURL: CallbackURL, scope: String, callback: @escaping RespodWithCredential) {
+    public init(path: String, consumerKey: String, consumerSecret: String, callbackURL: CallbackURL, blockForCallbackURLQueryParams: ((Request) -> [URLQueryItem])? = nil, scope: String, callback: @escaping RespodWithCredential) {    
         self.path = path
         
         self.oauth = OAuth2(
@@ -26,6 +26,7 @@ public struct GoogleAuthorizationProvider: OAuth2AuthorizationProvidable {
             authorizeURL: "https://accounts.google.com/o/oauth2/auth",
             accessTokenURL: "https://accounts.google.com/o/oauth2/token",
             callbackURL: callbackURL,
+            blockForCallbackURLQueryParams: blockForCallbackURLQueryParams,
             scope: scope
         )
         

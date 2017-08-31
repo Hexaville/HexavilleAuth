@@ -15,7 +15,7 @@ public protocol OAuth2AuthorizationProvidable {
     var path: String { get }
     var oauth: OAuth2 { get }
     var callback: RespodWithCredential { get }
-    init(path: String, consumerKey: String, consumerSecret: String, callbackURL: CallbackURL, scope: String, callback: @escaping RespodWithCredential)
+    init(path: String, consumerKey: String, consumerSecret: String, callbackURL: CallbackURL, blockForCallbackURLQueryParams: ((Request) -> [URLQueryItem])?, scope: String, callback: @escaping RespodWithCredential)
     func getAccessToken(for: Request) throws -> Credential
     func authorize(for: Request) throws -> (Credential, LoginUser)
 }

@@ -17,7 +17,7 @@ public struct InstagramAuthorizationProvider: OAuth2AuthorizationProvidable {
     
     public let callback: RespodWithCredential
     
-    public init(path: String, consumerKey: String, consumerSecret: String, callbackURL: CallbackURL, scope: String, callback: @escaping RespodWithCredential) {
+    public init(path: String, consumerKey: String, consumerSecret: String, callbackURL: CallbackURL, blockForCallbackURLQueryParams: ((Request) -> [URLQueryItem])? = nil, scope: String, callback: @escaping RespodWithCredential) {
         self.path = path
         
         self.oauth = OAuth2(
@@ -26,6 +26,7 @@ public struct InstagramAuthorizationProvider: OAuth2AuthorizationProvidable {
             authorizeURL: "https://api.instagram.com/oauth/authorize",
             accessTokenURL: "https://api.instagram.com/oauth/access_token",
             callbackURL: callbackURL,
+            blockForCallbackURLQueryParams: blockForCallbackURLQueryParams,
             scope: scope
         )
         
