@@ -16,16 +16,16 @@ public protocol OAuth2AuthorizationProvidable {
     var oauth: OAuth2 { get }
     var callback: RespodWithCredential { get }
     init(path: String, consumerKey: String, consumerSecret: String, callbackURL: CallbackURL, scope: String, callback: @escaping RespodWithCredential)
-    func getAccessToken(request: Request) throws -> Credential
-    func authorize(request: Request) throws -> (Credential, LoginUser)
+    func getAccessToken(for: Request) throws -> Credential
+    func authorize(for: Request) throws -> (Credential, LoginUser)
 }
 
 extension OAuth2AuthorizationProvidable {
-    public func createAuthorizeURL() throws -> URL {
-        return try oauth.createAuthorizeURL()
+    public func createAuthorizeURL(withCallbackURLQueryItems queryItems: [URLQueryItem]) throws -> URL {
+        return try oauth.createAuthorizeURL(withCallbackURLQueryItems: queryItems)
     }
     
-    public func getAccessToken(request: Request) throws -> Credential {
-        return try self.oauth.getAccessToken(request: request)
+    public func getAccessToken(for request: Request) throws -> Credential {
+        return try self.oauth.getAccessToken(for: request)
     }
 }
