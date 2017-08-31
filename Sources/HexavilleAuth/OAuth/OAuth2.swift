@@ -20,15 +20,17 @@ public class OAuth2 {
     var accessTokenURL: String?
     let responseType: String
     let callbackURL: CallbackURL
+    let blockForCallbackURLQueryParams: ((Request) -> [URLQueryItem])?
     let scope: String
     
-    public init(consumerKey: String, consumerSecret: String, authorizeURL: String, accessTokenURL: String? = nil, responseType: String = "code", callbackURL: CallbackURL, scope: String) {
+    public init(consumerKey: String, consumerSecret: String, authorizeURL: String, accessTokenURL: String? = nil, responseType: String = "code", callbackURL: CallbackURL, blockForCallbackURLQueryParams: ((Request) -> [URLQueryItem])? = nil, scope: String) {
         self.consumerKey = consumerKey
         self.consumerSecret = consumerSecret
         self.authorizeURL = authorizeURL
         self.accessTokenURL = accessTokenURL
         self.responseType = responseType
         self.scope = scope
+        self.blockForCallbackURLQueryParams = blockForCallbackURLQueryParams
         self.callbackURL = callbackURL
     }
     
@@ -36,10 +38,10 @@ public class OAuth2 {
         return dict.map({ "\($0.key)=\($0.value)" }).joined(separator: "&")
     }
     
-    public func createAuthorizeURL() throws -> URL {
+    public func createAuthorizeURL(withCallbackURLQueryItems queryItems: [URLQueryItem]) throws -> URL {
         let params = [
             "client_id": consumerKey,
-            "redirect_uri": callbackURL.absoluteURL()!.absoluteString,
+            "redirect_uri": callbackURL.absoluteURL(withQueryItems: queryItems)!.absoluteString,
             "response_type": responseType,
             "scope": scope
         ]
@@ -53,7 +55,7 @@ public class OAuth2 {
         return url
     }
     
-    public func getAccessToken(request: Request) throws -> Credential {
+    public func getAccessToken(for request: Request) throws -> Credential {
         guard let code = request.queryItems.filter({ $0.name == "code" }).first?.value else {
             throw HexavilleAuthError.codeIsMissingInResponseParameters
         }

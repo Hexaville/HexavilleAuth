@@ -53,13 +53,13 @@ extension HexavilleAuth {
                     return Response(
                         status: .found,
                         headers: [
-                            "Location": try provider.createAuthorizeURL().absoluteString
+                            "Location": try provider.createAuthorizeURL(withCallbackURLQueryItems: request.queryItems).absoluteString
                         ]
                     )
                 }
                 
                 router.use(.get, provider.oauth.callbackURL.path) { request, context in
-                    let (cred, user) = try provider.authorize(request: request)
+                    let (cred, user) = try provider.authorize(for: request)
                     context.session?[AuthenticationMiddleware.sessionKey] = user.serialize()
                     return try provider.callback(cred, user, request, context)
                 }

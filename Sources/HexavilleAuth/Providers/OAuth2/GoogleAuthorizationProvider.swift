@@ -34,8 +34,8 @@ public struct GoogleAuthorizationProvider: OAuth2AuthorizationProvidable {
     
     // TODO: 
     // not implemented yet
-    public func authorize(request: Request) throws -> (Credential, LoginUser)  {
-        let credential = try self.getAccessToken(request: request)
+    public func authorize(for request: Request) throws -> (Credential, LoginUser)  {
+        let credential = try self.getAccessToken(for: request)
         let user = LoginUser(id: "", name: "")
         return (credential, user)
     }

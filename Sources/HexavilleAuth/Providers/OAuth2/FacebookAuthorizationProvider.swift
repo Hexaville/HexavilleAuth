@@ -36,8 +36,8 @@ public struct FacebookAuthorizationProvider: OAuth2AuthorizationProvidable {
         self.callback = callback
     }
     
-    public func authorize(request: Request) throws -> (Credential, LoginUser)  {
-        let credential = try self.getAccessToken(request: request)
+    public func authorize(for request: Request) throws -> (Credential, LoginUser)  {
+        let credential = try self.getAccessToken(for: request)
         
         let request = Request(
             method: .get,
