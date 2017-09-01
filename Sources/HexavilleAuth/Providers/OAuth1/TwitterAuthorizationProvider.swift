@@ -43,7 +43,7 @@ public struct TwitterAuthorizationProvider: OAuth1AuthorizationProvidable {
     }
     
     public func authorize(request: Request, requestToken: RequestToken) throws -> (Credential, LoginUser)  {
-        let credential = try self.getAccessToken(request: request, requestToken: requestToken)
+        let credential = try self.getAccessToken(for: request, requestToken: requestToken)
         let info = try self.oauth.verify(credential: credential, verifyURL: "https://api.twitter.com/1.1/account/verify_credentials.json")
         
         let user = LoginUser(
