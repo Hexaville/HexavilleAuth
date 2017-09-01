@@ -61,13 +61,14 @@ public class OAuth2 {
         }
         let urlString = self.accessTokenURL!
         let url = URL(string: urlString)!
+        let redirectURL = callbackURL.absoluteURL(withQueryItems: request.queryItems)!.absoluteString
         
         let body: [String] = [
             "client_id=\(self.consumerKey)",
             "client_secret=\(self.consumerSecret)",
             "code=\(code)",
             "grant_type=authorization_code",
-            "redirect_uri=\(self.callbackURL.absoluteURL()!.absoluteString)"
+            "redirect_uri=\(redirectURL)"
         ]
         
         let request = Request(
@@ -97,4 +98,3 @@ public class OAuth2 {
     }
     
 }
-
