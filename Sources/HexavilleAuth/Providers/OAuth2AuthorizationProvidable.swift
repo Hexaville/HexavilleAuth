@@ -21,8 +21,8 @@ public protocol OAuth2AuthorizationProvidable {
 }
 
 extension OAuth2AuthorizationProvidable {
-    public func createAuthorizeURL(withCallbackURLQueryItems queryItems: [URLQueryItem]) throws -> URL {
-        return try oauth.createAuthorizeURL(withCallbackURLQueryItems: queryItems)
+    public func createAuthorizeURL(for request: Request) throws -> URL {
+        return try oauth.createAuthorizeURL(for: request)
     }
     
     public func getAccessToken(for request: Request) throws -> Credential {

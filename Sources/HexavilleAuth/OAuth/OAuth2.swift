@@ -38,7 +38,8 @@ public class OAuth2 {
         return dict.map({ "\($0.key)=\($0.value)" }).joined(separator: "&")
     }
     
-    public func createAuthorizeURL(withCallbackURLQueryItems queryItems: [URLQueryItem]) throws -> URL {
+    public func createAuthorizeURL(for request: Request) throws -> URL {
+        let queryItems = blockForCallbackURLQueryParams?(request) ?? []
         let params = [
             "client_id": consumerKey,
             "redirect_uri": callbackURL.absoluteURL(withQueryItems: queryItems)!.absoluteString,
@@ -61,7 +62,8 @@ public class OAuth2 {
         }
         let urlString = self.accessTokenURL!
         let url = URL(string: urlString)!
-        let redirectURL = callbackURL.absoluteURL(withQueryItems: request.queryItems)!.absoluteString
+        let queryItems = blockForCallbackURLQueryParams?(request) ?? []
+        let redirectURL = callbackURL.absoluteURL(withQueryItems: queryItems)!.absoluteString
         
         let body: [String] = [
             "client_id=\(self.consumerKey)",

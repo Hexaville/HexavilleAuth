@@ -118,7 +118,8 @@ public class OAuth1 {
         return dict.map({ "\($0.key)=\($0.value)" }).joined(separator: "&")
     }
     
-    public func getRequestToken(withCallbackURLQueryItems queryItems: [URLQueryItem]) throws -> RequestToken {
+    public func getRequestToken(for request: Request) throws -> RequestToken {
+        let queryItems = blockForCallbackURLQueryParams?(request) ?? []
         var params = [
             "oauth_callback": callbackURL.absoluteURL(withQueryItems: queryItems)!.absoluteString,
             "oauth_consumer_key": consumerKey,
