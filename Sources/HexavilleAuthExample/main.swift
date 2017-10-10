@@ -87,7 +87,7 @@ app.use(HexavilleAuth.AuthenticationMiddleware())
 
 app.use(auth)
 
-let router = Router()
+var router = Router()
 
 router.use(.get, "/") { req, context in
     return Response(body: "Welcome to Hexaville Auth")

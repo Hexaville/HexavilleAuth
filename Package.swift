@@ -1,14 +1,18 @@
-// swift-tools-version:3.1
+// swift-tools-version:4.0
 
 import PackageDescription
 
 let package = Package(
     name: "HexavilleAuth",
-    targets: [
-        Target(name: "HexavilleAuth"),
-        Target(name: "HexavilleAuthExample", dependencies: ["HexavilleAuth"])
+    products: [
+        .library(name: "HexavilleAuth", targets: ["HexavilleAuth"]),
+        .executable(name: "hexaville-todo-example", targets: ["HexavilleAuthExample"])
     ],
     dependencies: [
-        .Package(url: "https://github.com/noppoMan/HexavilleFramework.git", majorVersion: 0, minor: 1)
+        .package(url: "https://github.com/noppoMan/HexavilleFramework.git", .upToNextMajor(from: "0.1.15"))
+    ],
+    targets: [
+        .target(name: "HexavilleAuth", dependencies: ["HexavilleFramework"]),
+        .target(name: "HexavilleAuthExample", dependencies: ["HexavilleAuth"])
     ]
 )

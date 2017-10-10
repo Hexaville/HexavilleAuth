@@ -11,7 +11,7 @@ import HexavilleFramework
 
 extension HexavilleAuth {
     func asRouter() -> Router {
-        let router = Router()
+        var router = Router()
         for type in providers {
             switch type {
             case .oauth1(let provider):
