@@ -35,7 +35,7 @@ public class OAuth2 {
     }
     
     private func dictionary2Query(_ dict: [String: String]) -> String {
-        return dict.map({ "\($0.key)=\($0.value)" }).joined(separator: "&")
+        return dict.map({ "\($0.key)=\($0.value.addingPercentEncoding(withAllowedCharacters: CharacterSet.alphanumerics)!)" }).joined(separator: "&")
     }
     
     public func createAuthorizeURL(for request: Request) throws -> URL {
@@ -48,7 +48,6 @@ public class OAuth2 {
         ]
         
         let queryString = dictionary2Query(params)
-        
         guard let url = URL(string: "\(authorizeURL)?\(queryString)") else {
             throw OAuth2Error.invalidAuthrozeURL("\(authorizeURL)?\(queryString)")
         }
@@ -63,7 +62,10 @@ public class OAuth2 {
         let urlString = self.accessTokenURL!
         let url = URL(string: urlString)!
         let queryItems = blockForCallbackURLQueryParams?(request) ?? []
-        let redirectURL = callbackURL.absoluteURL(withQueryItems: queryItems)!.absoluteString
+        let redirectURL = callbackURL
+            .absoluteURL(withQueryItems: queryItems)!
+            .absoluteString
+            .addingPercentEncoding(withAllowedCharacters: .alphanumerics)!
         
         let body: [String] = [
             "client_id=\(self.consumerKey)",
