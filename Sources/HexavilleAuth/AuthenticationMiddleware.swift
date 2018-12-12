@@ -9,7 +9,6 @@
 import Foundation
 import HexavilleFramework
 
-
 extension HexavilleAuth {
     public struct AuthenticationMiddleware: Middleware {
         

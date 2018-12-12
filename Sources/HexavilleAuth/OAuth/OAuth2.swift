@@ -65,7 +65,7 @@ public class OAuth2 {
         let queryItems = blockForCallbackURLQueryParams?(request) ?? []
         let redirectURL = callbackURL.absoluteURL(withQueryItems: queryItems)!.absoluteString
         
-        let body: [String] = [
+        let requestBody: [String] = [
             "client_id=\(self.consumerKey)",
             "client_secret=\(self.consumerSecret)",
             "code=\(code)",
@@ -73,26 +73,20 @@ public class OAuth2 {
             "redirect_uri=\(redirectURL)"
         ]
         
-        let request = Request(
-            method: .post,
-            url: url,
-            headers: [
-                "Accept": "application/json",
-                "Content-Type": "application/x-www-form-urlencoded"
-            ],
-            body: body.joined(separator: "&").data
-        )
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        request.httpBody = requestBody.joined(separator: "&").data
         
-        let client = try HTTPClient(url: request.url)
-        try client.open()
-        let response = try client.request(request)
+        let (response, body) = try HTTPClient().send(request: request)
         
         guard (200..<300).contains(response.statusCode) else {
-            throw HexavilleAuthError.responseError(response)
+            throw HexavilleAuthError.responseError(response, body)
         }
         
         do {
-            let bodyDictionary = try JSONSerialization.jsonObject(with: response.body.asData(), options: []) as! [String: Any]
+            let bodyDictionary = try JSONSerialization.jsonObject(with: body, options: []) as! [String: Any]
             return try Credential(withDictionary: bodyDictionary)
         } catch {
             throw error
