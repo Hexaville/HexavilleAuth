@@ -4,18 +4,18 @@ import HexavilleFramework
 public enum HexavilleAuthError: Error {
     case unsupportedPlaform
     case codeIsMissingInResponseParameters
-    case responseError(Response)
+    case responseError(HTTPURLResponse, Data)
 }
 
 extension HexavilleAuthError: CustomStringConvertible {
     public var description: String {
         switch self {
-        case .responseError(let response):
+        case .responseError(let response, let body):
             var str = ""
             str += "\(response)"
             str += "\n"
             str += "\n"
-            str += String(data: response.body.asData(), encoding: .utf8) ?? "Unknown Error"
+            str += String(data:  body, encoding: .utf8) ?? "Unknown Error"
             return str
             
         default:

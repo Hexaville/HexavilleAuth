@@ -8,16 +8,15 @@
 
 import Foundation
 import HexavilleFramework
-import CLibreSSL
 
 public enum OAuth1Error: Error {
     case couldNotGenerateSignature
     case invalidAuthrozeURL(String)
     case missingRequiredParameters(String)
     case accessTokenIsMissingInSession
-    case verifyFailed(Request, Response)
-    case failedToGetAccessToken(Request, Response)
-    case failedToGetRequestToken(Request, Response)
+    case verifyFailed(URLRequest, HTTPURLResponse, Data)
+    case failedToGetAccessToken(URLRequest, HTTPURLResponse, Data)
+    case failedToGetRequestToken(URLRequest, HTTPURLResponse, Data)
 }
 
 extension OAuth1Error: CustomStringConvertible {
@@ -35,39 +34,41 @@ extension OAuth1Error: CustomStringConvertible {
         case .accessTokenIsMissingInSession:
             return "accessTokenIsMissingInSession"
             
-        case .verifyFailed(let req, let res):
-            return stringify(code: "verifyFailed", request: req, response: res)
+        case .verifyFailed(let req, let res, let body):
+            return stringify(code: "verifyFailed", request: req, response: res, body: body)
             
-        case .failedToGetAccessToken(let req, let res):
-            return stringify(code: "failedToGetAccessToken", request: req, response: res)
+        case .failedToGetAccessToken(let req, let res, let body):
+            return stringify(code: "failedToGetAccessToken", request: req, response: res, body: body)
             
-        case .failedToGetRequestToken(let req, let res):
-            return stringify(code: "failedToGetRequestToken", request: req, response: res)
+        case .failedToGetRequestToken(let req, let res, let body):
+            return stringify(code: "failedToGetRequestToken", request: req, response: res, body: body)
         }
     }
     
-    private func stringify(code: String, request: Request, response: Response) -> String {
+    private func stringify(code: String, request: URLRequest, response: HTTPURLResponse, body: Data) -> String {
         var requestHeaders: [String: String] = [:]
-        for (key, value) in request.headers {
+        for (key, value) in request.allHTTPHeaderFields ?? [:] {
             requestHeaders[key.description] = value
         }
         
         var responseHeaders: [String: String] = [:]
-        for (key, value) in response.headers {
-            responseHeaders[key.description] = value
+        for (key, value) in response.allHeaderFields {
+            if let value = value as? String {
+                responseHeaders[key.description] = value
+            }
         }
         
         let requestDict: [String: Any] = [
-            "method": request.method.rawValue,
-            "url": request.url.absoluteString,
+            "method": request.httpMethod ?? "GET",
+            "url": request.url!.absoluteString,
             "headers": requestHeaders,
-            "body": String(data: request.body.asData(), encoding: .utf8) ?? ""
+            "body": String(data: body, encoding: .utf8) ?? ""
         ]
         
         let responseDict: [String: Any] = [
             "statusCode": response.statusCode,
             "headers": responseHeaders,
-            "body": String(data: response.body.asData(), encoding: .utf8) ?? ""
+            "body": String(data: body, encoding: .utf8) ?? ""
         ]
         
         do {
@@ -137,20 +138,17 @@ public class OAuth1 {
         
         let authorizationValue = OAuth1.oAuthAuthorizationString(fromParameters: params, withAllowedCharacters: withAllowedCharacters)
         
-        let request = Request(
-            method: .post,
-            url: URL(string: requestTokenUrl)!,
-            headers: ["Authorization": authorizationValue]
-        )
-        let client = try HTTPClient(url: request.url)
-        try client.open()
-        let response = try client.request(request)
+        var request = URLRequest(url: URL(string: requestTokenUrl)!)
+        request.addValue(authorizationValue, forHTTPHeaderField: "Authorization")
+        request.httpMethod = "POST"
+        
+        let (response, body) = try HTTPClient().send(request: request)
         
         guard (200..<300).contains(response.statusCode) else {
-            throw OAuth1Error.failedToGetRequestToken(request, response)
+            throw OAuth1Error.failedToGetRequestToken(request, response, body)
         }
         
-        let bodyDictionary = OAuth1.parse(bodyData: response.body.asData())
+        let bodyDictionary = OAuth1.parse(bodyData: body)
         
         guard let oauthToken = bodyDictionary["oauth_token"] else {
             throw OAuth1Error.missingRequiredParameters("oauth_token")
@@ -203,22 +201,16 @@ public class OAuth1 {
         params["oauth_signature"] = sig
         
         let authrozationString = OAuth1.oAuthAuthorizationString(fromParameters: params, withAllowedCharacters: withAllowedCharacters)
-        
-        let request = Request(
-            method: .get,
-            url: URL(string: verifyURL)!,
-            headers: ["Authorization": authrozationString]
-        )
-        
-        let client = try HTTPClient(url: request.url)
-        try client.open()
-        let response = try client.request(request)
+        var request = URLRequest(url: URL(string: verifyURL)!)
+        request.addValue(authrozationString, forHTTPHeaderField: "Authorization")
+    
+        let (response, body) = try HTTPClient().send(request: request)
         
         guard (200..<300).contains(response.statusCode) else {
-            throw OAuth1Error.verifyFailed(request, response)
+            throw OAuth1Error.verifyFailed(request, response, body)
         }
         
-        return try JSONSerialization.jsonObject(with: response.body.asData(), options: []) as? [String: Any] ?? [:]
+        return try JSONSerialization.jsonObject(with: body, options: []) as? [String: Any] ?? [:]
     }
     
     public func getAccessToken(request: Request, requestToken: RequestToken) throws -> Credential {
@@ -256,21 +248,17 @@ public class OAuth1 {
         
         let authrozationString = OAuth1.oAuthAuthorizationString(fromParameters: params, withAllowedCharacters: withAllowedCharacters)
         
-        let request = Request(
-            method: .post,
-            url: URL(string: urlString)!,
-            headers: ["Authorization": authrozationString]
-        )
+        var request = URLRequest(url: URL(string: requestTokenUrl)!)
+        request.addValue(authrozationString, forHTTPHeaderField: "Authorization")
+        request.httpMethod = "POST"
         
-        let client = try HTTPClient(url: request.url)
-        try client.open()
-        let response = try client.request(request)
+        let (response, body) = try HTTPClient().send(request: request)
         
         guard (200..<300).contains(response.statusCode) else {
-            throw OAuth1Error.failedToGetAccessToken(request, response)
+            throw OAuth1Error.failedToGetAccessToken(request, response, body)
         }
         
-        return try Credential(withDictionary: OAuth1.parse(bodyData: response.body.asData()))
+        return try Credential(withDictionary: OAuth1.parse(bodyData: body))
     }
 }
 
@@ -324,7 +312,8 @@ extension OAuth1 {
         }
         
         let rawString = [method, percentEncodedUrl, percentEncodedJoinedParameters].joined(separator: "&")
-        let encodedRawBytes =  hmacsha1(string: rawString, key: (percentEncodedConsumerSecret + "&" + (oauthToken ?? "")).bytes)
+        let bytes = Array((percentEncodedConsumerSecret + "&" + (oauthToken ?? "")).utf8)
+        let encodedRawBytes =  hmacsha1(string: rawString, key: bytes)
         
         let encodedString = String(bytes: Base64Encoder.shared.encode(encodedRawBytes), encoding: .utf8) ?? ""
         

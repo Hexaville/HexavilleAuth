@@ -40,20 +40,15 @@ public struct FacebookAuthorizationProvider: OAuth2AuthorizationProvidable {
     public func authorize(for request: Request) throws -> (Credential, LoginUser)  {
         let credential = try self.getAccessToken(for: request)
         
-        let request = Request(
-            method: .get,
-            url: URL(string: "https://graph.facebook.com/me?fields=id,name,email,picture,gender&access_token=\(credential.accessToken)")!
-        )
+        let url = URL(string: "https://graph.facebook.com/me?fields=id,name,email,picture,gender&access_token=\(credential.accessToken)")
         
-        let client = try HTTPClient(url: request.url)
-        try client.open()
-        let response = try client.request(request)
+        let (response, body) = try HTTPClient().send(url: url!)
         
         guard (200..<300).contains(response.statusCode) else {
-            throw HexavilleAuthError.responseError(response)
+            throw HexavilleAuthError.responseError(response, body)
         }
         
-        guard let json = try JSONSerialization.jsonObject(with: response.body.asData(), options: []) as? [String: Any] else {
+        guard let json = try JSONSerialization.jsonObject(with: body, options: []) as? [String: Any] else {
             throw FacebookAuthorizationProviderError.bodyShouldBeAJSON
         }
         
